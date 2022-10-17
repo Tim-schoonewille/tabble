@@ -53,6 +53,7 @@ class Tab(db.Model):
 class Favourite(db.Model):
     favourite_id = db.Column(db.Integer, primary_key=True)
     tab_id = db.Column(db.Integer, db.ForeignKey('tab.tab_id'))
+    tab_uuid = db.Column(db.String(500))
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     last_editted = db.Column(db.DateTime, onupdate=datetime.utcnow)
