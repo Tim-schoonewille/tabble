@@ -26,3 +26,21 @@ Currently I have the skills to create a full functioning backend, but I do not y
 - ..
 - .....
 - Profit?
+
+---
+## Backend API endpoints
+
+* /auth/
+  * /auth/login
+  * /auth/logout
+  * /auth/register
+  * /auth/<user_uuid>/confirm/<registration_uuid>
+  * /auth/<user_uuid>/confirm/new
+* /tabs/
+  * /tabs/artist/<artist>
+* /tab/
+  * /tab/<tab_uuid>
+  * /tab/<tab_uuid>/favourite
+  * /tab/<tab_uuid>/unfavourite
+  * /tab/<tab_uuid>/complete
+  * /tab/<tab_uuid>/uncomplete
