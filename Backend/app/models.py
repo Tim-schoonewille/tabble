@@ -11,7 +11,7 @@ tab_genre = db.Table('tab_genre',
 
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
-    user_uuid = db.Column(db.String(500), default=uuid4())
+    user_uuid = db.Column(db.String(500))
     email = db.Column(db.String(500), unique=True, nullable=False)
     password = db.Column(db.String(500), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
@@ -33,7 +33,7 @@ class User(db.Model):
 
 class Tab(db.Model):
     tab_id = db.Column(db.Integer, primary_key=True)
-    tab_uuid = db.Column(db.String(500), default=uuid4())
+    tab_uuid = db.Column(db.String(500))
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
     artist = db.Column(db.String(500), nullable=False)
     title = db.Column(db.String(500), nullable=False)
