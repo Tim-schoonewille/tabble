@@ -8,7 +8,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config.update(
-        SQLALCHEMY_DATABASE_URI = 'file:///db.sqlite3'
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite3',
         SQLALCHEMY_TRACK_MODIFICATIONS = False
     )
 
