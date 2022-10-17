@@ -44,7 +44,7 @@ class Tab(db.Model):
 
     user = db.relationship('User', back_populates='tabs_added')
     genres = db.relationship('Genre', secondary='tab_genre')
-
+    favourited = db.relationship('Favourite', back_populates='tab')
 
     def __repr__(self):
         return f'<TAB: {self.artist} - {self.title}>'
@@ -59,6 +59,7 @@ class Favourite(db.Model):
     completed = db.Column(db.Boolean, default=False)
 
     user = db.relationship('User', back_populates='favourite_tabs')
+    tab = db.relationship('Tab', back_populates='favourited')
 
 
 
