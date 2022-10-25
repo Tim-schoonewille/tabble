@@ -14,6 +14,7 @@ class User(db.Model):
     user_uuid = db.Column(db.String(500))
     email = db.Column(db.String(500), unique=True, nullable=False)
     password = db.Column(db.String(500), nullable=False)
+    activated = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
     is_mod = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -21,7 +22,7 @@ class User(db.Model):
     date_of_birth = db.Column(db.DateTime, nullable=True)
     first_name = db.Column(db.String(500), nullable=True)
     last_name = db.Column(db.String(500), nullable=True)
-    # TODO Add something so user has to activate.
+    
 
     tabs_added = db.relationship('Tab', back_populates='user')
     favourite_tabs = db.relationship('Favourite', back_populates='user')
@@ -72,3 +73,13 @@ class Genre(db.Model):
     def __repr__(self):
         return f'<GENRE: {self.name}>'
 
+
+class Registration(db.Model):
+    reg_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+    completed = db.Column(db.Boolean, default=False)
+    registration_string = db.Column(db.String(500))
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    date_confirmed = db.Column(db.DateTime)
+    
+    # TODO test this
