@@ -21,7 +21,7 @@ class User(db.Model):
     date_of_birth = db.Column(db.DateTime, nullable=True)
     first_name = db.Column(db.String(500), nullable=True)
     last_name = db.Column(db.String(500), nullable=True)
-    
+    # TODO Add something so user has to activate.
 
     tabs_added = db.relationship('Tab', back_populates='user')
     favourite_tabs = db.relationship('Favourite', back_populates='user')

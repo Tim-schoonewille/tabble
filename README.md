@@ -36,11 +36,15 @@ Currently I have the skills to create a full functioning backend, but I do not y
   * /auth/register
   * /auth/<user_uuid>/confirm/<registration_uuid>
   * /auth/<user_uuid>/confirm/new
-* /tabs/
-  * /tabs/artist/<artist>
 * /tab/
-  * /tab/<tab_uuid>
-  * /tab/<tab_uuid>/favourite
-  * /tab/<tab_uuid>/unfavourite
-  * /tab/<tab_uuid>/complete
-  * /tab/<tab_uuid>/uncomplete
+  * /tab/ - POST/GET
+  * /tab/<tab_uuid> - GET/PUT/DELETE
+  * /tab/<tab_uuid>/favourite - POST
+  * /tab/<tab_uuid>/unfavourite - POST
+  * /tab/<tab_uuid>/complete  - PUT
+  * /tab/<tab_uuid>/uncomplete - PUT
+* /admin/
+  * /admin/user/<user_uuid>/deactivate
+  * /admin/user/<user_uuid> - GET/DELETE
+  * /admin/tab/ - GET
+  * /admin/tab/<tab_uuid> - DELETE
