@@ -39,10 +39,8 @@ Currently I have the skills to create a full functioning backend, but I do not y
 * /tab/
   * /tab/ - POST/GET
   * /tab/<tab_uuid> - GET/PUT/DELETE
-  * /tab/<tab_uuid>/favourite - POST
-  * /tab/<tab_uuid>/unfavourite - POST
-  * /tab/<tab_uuid>/complete  - PUT
-  * /tab/<tab_uuid>/uncomplete - PUT
+  * /tab/<tab_uuid>/favourite - POST/DELETE
+  * /tab/<tab_uuid>/complete  - POST/DELETE
 * /admin/
   * /admin/user/<user_uuid>/deactivate
   * /admin/user/<user_uuid> - GET/DELETE
