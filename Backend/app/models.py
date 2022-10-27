@@ -49,6 +49,20 @@ class Tab(db.Model):
 
     def __repr__(self):
         return f'<TAB: {self.artist} - {self.title}>'
+    
+    def serialize(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
+    def favourite(self, user):
+        
+        new_favourite = Favourite(tab_id=self.tab_id,
+                                  tab_uuid=self.tab_uuid,
+                                  user_id=user.user_id,
+                                  )
+        db.session.add(new_favourite)
+        db.session.commit()
+        
+        return True
 
 
 class Favourite(db.Model):
