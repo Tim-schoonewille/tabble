@@ -1,5 +1,7 @@
 from flask import Flask
+
 from app.ext import db
+from app.ext import jwt
 from app.models import *
 
 
@@ -13,8 +15,13 @@ def create_app():
     )
 
     db.init_app(app)
+    jwt.init_app(app)
 
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
+    
+    from app.views.auth import auth
+    
+    app.register_blueprint(auth)
 
     return app
