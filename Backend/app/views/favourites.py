@@ -16,6 +16,19 @@ favourites = Blueprint('favourites', __name__, url_prefix=API_URL_PREFIX + '/fav
 @favourites.get('/')
 @jwt_required()
 def get_favourites():
+    if request.args:
+        
+        artist = request.args.get('artist')
+        title = request.args.get('title')
+        
+        
+        if artist:
+            response = {"content": [favourite.serialize() for favourite in current_user.favourite_tabs if favourite.tab.artist==artist]}
+            return response, HTTP_200_OK
+
+        if title:
+            response = {"content": [favourite.serialize() for favourite in current_user.favourite_tabs if favourite.tab.title==title]}
+            return response, HTTP_200_OK          
     
     response = {"content": [favourite.serialize() for favourite in current_user.favourite_tabs]}
     return response, HTTP_200_OK
