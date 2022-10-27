@@ -77,7 +77,16 @@ class Favourite(db.Model):
     user = db.relationship('User', back_populates='favourite_tabs')
     tab = db.relationship('Tab', back_populates='favourited')
 
-
+    def serialize(self):
+        return {
+            "id": self.favourite_id,
+            "tab_id": self.tab_uuid,
+            "date_added": self.date_added,
+            "last_editted": self.last_editted,
+            "completed": self.completed,
+            "title": self.tab.title,
+            "artist": self.tab.artist,
+        }
 
 class Genre(db.Model):
     genre_id = db.Column(db.Integer, primary_key=True)
