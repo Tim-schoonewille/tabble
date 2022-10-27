@@ -6,12 +6,14 @@ from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import set_access_cookies
 from flask_jwt_extended import jwt_required
+from flask_jwt_extended import get_jwt
+from flask_jwt_extended import unset_access_cookies
 from uuid import uuid4
 from datetime import datetime
 
 from app.constants import API_URL_PREFIX, HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_409_CONFLICT
 from app.ext import db
-from app.models import User
+from app.models import TokenBlocklist, User
 
 
 auth = Blueprint('auth', __name__, url_prefix=API_URL_PREFIX + '/auth')
@@ -78,3 +80,20 @@ def login_user():
     db.session.commit()
     
     return response, HTTP_200_OK
+
+
+@auth.post('/logout')
+@jwt_required()
+def auth_logout():
+    
+    jti = get_jwt()["jti"]
+    now = datetime.now()
+    db.session.add(TokenBlocklist(jti=jti, created_at=now))
+    db.session.commit()
+    
+    response = jsonify(content="Logout successfull")
+    unset_access_cookies(response)
+    
+    return response, HTTP_200_OK
+
+    

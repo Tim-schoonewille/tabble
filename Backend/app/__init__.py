@@ -37,6 +37,14 @@ def create_app():
         identity = jwt_data["sub"]
         return User.query.filter_by(user_id=identity).one_or_none()
 
+
+    @jwt.token_in_blocklist_loader
+    def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
+        jti = jwt_payload["jti"]
+        token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
+
+        return token is not None
+    
     
     from app.views.auth import auth
     
