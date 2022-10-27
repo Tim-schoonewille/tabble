@@ -10,10 +10,12 @@ from flask_jwt_extended import get_jwt
 from flask_jwt_extended import unset_access_cookies
 from uuid import uuid4
 from datetime import datetime
+import string
+import random
 
-from app.constants import API_URL_PREFIX, HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_409_CONFLICT
+from app.constants import API_URL_PREFIX, HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 from app.ext import db
-from app.models import TokenBlocklist, User
+from app.models import TokenBlocklist, User, Registration
 
 
 auth = Blueprint('auth', __name__, url_prefix=API_URL_PREFIX + '/auth')
@@ -46,9 +48,22 @@ def register_account():
                     is_mod=True,
                     )
     
+
+    
     db.session.add(new_user)
     db.session.commit()
     
+    reg_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+    print(reg_string)
+    print(new_user.user_uuid)
+    
+    new_registration_confirm = Registration(user_id=new_user.user_id,
+                                            registration_string=reg_string)
+    
+    db.session.add(new_registration_confirm)
+    db.session.commit()
+                                               
+
     response = {"conent":"Registration success"}
     return response, HTTP_201_CREATED
 
@@ -63,6 +78,10 @@ def login_user():
         response = {"content":"Invalid email/password!"}
         return response, HTTP_401_UNAUTHORIZED
     
+    if not user.activated:
+        response = {"content":"Account not activated."}
+        return response, HTTP_400_BAD_REQUEST
+    
     response = jsonify(content="Login success.")
     
     additional_claims = {
@@ -76,7 +95,7 @@ def login_user():
     
     set_access_cookies(response, access_token)
     
-    user.last_login = datetime.now()
+    user.last_login = datetime.utcnow()
     db.session.commit()
     
     return response, HTTP_200_OK
@@ -96,4 +115,22 @@ def auth_logout():
     
     return response, HTTP_200_OK
 
+
+@auth.post('/<user_uuid>/confirm/<registration_string>')
+def confirm_registration(user_uuid, registration_string):
     
+    user = User.query.filter_by(user_uuid=user_uuid).one_or_none()
+    registration = Registration.query.filter_by(user_id=user.user_id).one_or_none()
+    
+    if not user or not registration:
+        return {"content": "Invalid user"}, HTTP_404_NOT_FOUND
+    
+    if registration.registration_string != registration_string:
+        return {"content": "Invalid string"}, HTTP_400_BAD_REQUEST
+    
+    user.activated = True
+    registration.date_confirmed = datetime.utcnow()
+    
+    db.session.commit()
+    
+    return {"message": "Account confirmed!"}
