@@ -41,5 +41,8 @@ def create_app():
     from app.views.auth import auth
     
     app.register_blueprint(auth)
+    
+    # with app.app_context():
+    #     db.create_all()
 
     return app
