@@ -173,3 +173,39 @@ def delete_tab_from_favourites(tab_uuid):
     return response, HTTP_200_OK
 
 
+@tab.post('/<tab_uuid>/complete')
+@jwt_required()
+def complete_tab(tab_uuid):
+    
+    favourite = Favourite.query.filter_by(tab_uuid=tab_uuid,
+                                          user=current_user).one_or_none()
+    
+    if not favourite:
+        response = {"content": "Can't complete because it is not favourited."}
+        return response, HTTP_400_BAD_REQUEST
+    
+    favourite.completed = True
+    
+    db.session.commit()
+    
+    response = {"content": "Tab completed!"}
+    return response, HTTP_200_OK
+
+
+@tab.delete('/<tab_uuid>/complete')
+@jwt_required()
+def uncomplete_tab(tab_uuid):
+    
+    favourite = Favourite.query.filter_by(tab_uuid=tab_uuid,
+                                          user=current_user).one_or_none()
+    
+    if not favourite:
+        response = {"content": "Can't uncomplete because it is not favourited."}
+        return response, HTTP_400_BAD_REQUEST
+
+    favourite.completed = False
+    
+    db.session.commit()
+    
+    response = {"content": "Tab uncompleted!"}
+    return response, HTTP_200_OK
