@@ -125,12 +125,46 @@ def confirm_registration(user_uuid, registration_string):
     if not user or not registration:
         return {"content": "Invalid user"}, HTTP_404_NOT_FOUND
     
+    if user.activated:
+        return {"content": "Already activated"}, HTTP_400_BAD_REQUEST
+    
     if registration.registration_string != registration_string:
         return {"content": "Invalid string"}, HTTP_400_BAD_REQUEST
     
     user.activated = True
     registration.date_confirmed = datetime.utcnow()
+    registration.completed = True
     
     db.session.commit()
     
     return {"message": "Account confirmed!"}
+
+
+@auth.post('/<user_uuid>/confirm/new')
+def request_new_confirm(user_uuid):
+    
+    user = User.query.filter_by(user_uuid=user_uuid).one_or_none()
+    
+    if user.activated:
+        return {"content": "Already activated."}, HTTP_400_BAD_REQUEST
+    
+    registration = Registration.query.filter_by(user_id=user.user_id).one_or_none()
+    
+    if not registration:
+        return {"content": "No initial registration"}, HTTP_400_BAD_REQUEST
+    
+    db.session.delete(registration)
+    db.session.commit()
+    
+    reg_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(6))
+    print(reg_string)
+    print(user.user_uuid)
+    
+    new_registration_confirm = Registration(user_id=user.user_id,
+                                            registration_string=reg_string)
+    
+    db.session.add(new_registration_confirm)
+    db.session.commit()
+    
+    response = {"content": "New confirmation send!"}
+    return response, HTTP_200_OK
