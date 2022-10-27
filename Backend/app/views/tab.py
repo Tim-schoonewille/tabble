@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from app.constants import API_URL_PREFIX, HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 from app.ext import db
-from app.models import Tab
+from app.models import Tab, Favourite
 
 
 
@@ -123,4 +123,53 @@ def delete_tab(tab_uuid):
     db.session.commit()
     
     response = {"content":"Tab deleted"}
-    return response, HTTP_200_OK   
+    return response, HTTP_200_OK
+
+
+@tab.post('/<tab_uuid>/favourite')
+@jwt_required()
+def add_tab_to_favourite(tab_uuid):
+
+    specific_tab = Tab.query.filter_by(tab_uuid=tab_uuid).one_or_none()
+    
+    
+    if not specific_tab:
+        response = {"content":"Invalid tab ID"}
+        return response, HTTP_404_NOT_FOUND
+    
+    
+    if Favourite.query.filter_by(tab_uuid=tab_uuid,
+                                 user_id=current_user.user_id).one_or_none():
+        response = {"content": "already in favourite"}
+        return response, HTTP_400_BAD_REQUEST
+    
+    specific_tab.favourite(current_user)
+    response = {"content": "Tab added to favourites."}
+    return response, HTTP_200_OK
+
+
+@tab.delete('/<tab_uuid>/favourite')
+@jwt_required()
+def delete_tab_from_favourites(tab_uuid):
+
+    specific_tab = Tab.query.filter_by(tab_uuid=tab_uuid).one_or_none()
+    
+    
+    if not specific_tab:
+        response = {"content":"Invalid tab ID"}
+        return response, HTTP_404_NOT_FOUND
+    
+    favourite_tab = Favourite.query.filter_by(tab_uuid=tab_uuid,
+                                 user_id=current_user.user_id).one_or_none()
+    
+    if not favourite_tab:
+        response = {"content": "Not in list of favourites"}
+        return response, HTTP_400_BAD_REQUEST
+    
+    db.session.delete(favourite_tab)
+    db.session.commit()
+    
+    response = {"content": "Removed from favourites."}
+    return response, HTTP_200_OK
+
+
