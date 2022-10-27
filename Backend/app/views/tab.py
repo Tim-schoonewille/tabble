@@ -19,7 +19,13 @@ tab = Blueprint('tab', __name__, url_prefix=API_URL_PREFIX + '/tab')
 
 @tab.get('/')
 def get_tabs():
-    pass
+    
+    all_tabs = Tab.query.all()
+    print(all_tabs)
+    
+    response = {"content": [tab.serialize() for tab in all_tabs]}
+    return response, HTTP_200_OK
+    
 
 
 @tab.post('/')
@@ -45,9 +51,7 @@ def add_tab():
     
     db.session.add(new_tab)
     db.session.commit()
+    new_tab.favourite(current_user)
+
     
-    
-    print(request.json)
-    print(current_user)
-    
-    return {"content": "Hello world!"}
+    return {"content": "Tab added and favorited."}, HTTP_200_OK
