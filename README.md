@@ -41,6 +41,9 @@ Currently I have the skills to create a full functioning backend, but I do not y
   * /tab/<tab_uuid> - GET/PUT/DELETE
   * /tab/<tab_uuid>/favourite - POST/DELETE
   * /tab/<tab_uuid>/complete  - POST/DELETE
+* /artist/
+  * /artist/  - GET
+  * /artist/<name>  - GET
 * /favourite
   * /favourites/ - GET
 * /admin/
