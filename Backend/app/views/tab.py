@@ -99,4 +99,28 @@ def edit_specific_tab(tab_uuid):
     
     response = {"content": "Tab updated!"}
     return response, HTTP_200_OK
+
+
+
+@tab.delete('/<tab_uuid>')
+@jwt_required()
+def delete_tab(tab_uuid):
+
+    specific_tab = Tab.query.filter_by(tab_uuid=tab_uuid).one_or_none()
     
+    
+    if not specific_tab:
+        response = {"content":"Invalid tab ID"}
+        return response, HTTP_404_NOT_FOUND
+    
+    
+    if specific_tab.user != current_user:
+        response = {"content":"You can't edit this tab."}
+        return response, HTTP_401_UNAUTHORIZED
+    
+    
+    db.session.delete(specific_tab)
+    db.session.commit()
+    
+    response = {"content":"Tab deleted"}
+    return response, HTTP_200_OK   
