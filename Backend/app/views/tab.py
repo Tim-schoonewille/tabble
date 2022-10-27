@@ -21,6 +21,22 @@ tab = Blueprint('tab', __name__, url_prefix=API_URL_PREFIX + '/tab')
 def get_tabs():
     
     all_tabs = Tab.query.all()
+    
+    if request.args:
+        
+        artist = request.args.get('artist')
+        title = request.args.get('title')
+        
+        if artist:
+            response = {"content": [tab.serialize() for tab in all_tabs if tab.artist==artist]}
+            return response, HTTP_200_OK
+               
+        if title:
+            response = {"content": [tab.serialize() for tab in all_tabs if tab.title==title]}
+            return response, HTTP_200_OK
+        
+    
+
     print(all_tabs)
     
     response = {"content": [tab.serialize() for tab in all_tabs]}
