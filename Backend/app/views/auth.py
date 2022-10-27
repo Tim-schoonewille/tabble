@@ -1,9 +1,15 @@
 from flask import Blueprint
 from flask import request
+from flask import jsonify
 from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import set_access_cookies
+from flask_jwt_extended import jwt_required
 from uuid import uuid4
+from datetime import datetime
 
-from app.constants import API_URL_PREFIX, HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_409_CONFLICT
+from app.constants import API_URL_PREFIX, HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_409_CONFLICT
 from app.ext import db
 from app.models import User
 
@@ -11,6 +17,7 @@ from app.models import User
 auth = Blueprint('auth', __name__, url_prefix=API_URL_PREFIX + '/auth')
 
 @auth.get('/test')
+@jwt_required()
 def test_route():
     return {"content":"Hello World"}, HTTP_200_OK
 
@@ -42,3 +49,32 @@ def register_account():
     
     response = {"conent":"Registration success"}
     return response, HTTP_201_CREATED
+
+
+
+@auth.post('/login')
+def login_user():
+    
+    user = User.query.filter_by(email=request.json.get('email').lower()).one_or_none()
+    
+    if not user or not check_password_hash(user.password, request.json.get('password')):
+        response = {"content":"Invalid email/password!"}
+        return response, HTTP_401_UNAUTHORIZED
+    
+    response = jsonify(content="Login success.")
+    
+    additional_claims = {
+        "is_admin": user.is_admin,
+        "is_mod": user.is_mod
+    }
+    
+    access_token = create_access_token(identity=user, 
+                                       additional_claims=additional_claims,
+                                       fresh=True)
+    
+    set_access_cookies(response, access_token)
+    
+    user.last_login = datetime.now()
+    db.session.commit()
+    
+    return response, HTTP_200_OK
