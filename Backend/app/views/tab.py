@@ -55,3 +55,17 @@ def add_tab():
 
     
     return {"content": "Tab added and favorited."}, HTTP_200_OK
+
+
+@tab.get('/<tab_uuid>')
+def get_specific_tab(tab_uuid):
+    
+    specific_tab = Tab.query.filter_by(tab_uuid=tab_uuid).one_or_none()
+    
+    if not specific_tab:
+        response = {"content":"Invalid tab ID"}
+        return response, HTTP_404_NOT_FOUND
+
+    response = {"content":specific_tab.serialize()}
+
+    return response, HTTP_200_OK
