@@ -69,3 +69,34 @@ def get_specific_tab(tab_uuid):
     response = {"content":specific_tab.serialize()}
 
     return response, HTTP_200_OK
+
+
+@tab.put('/<tab_uuid>')
+@jwt_required()
+def edit_specific_tab(tab_uuid):
+
+    specific_tab = Tab.query.filter_by(tab_uuid=tab_uuid).one_or_none()
+    
+    
+    if not specific_tab:
+        response = {"content":"Invalid tab ID"}
+        return response, HTTP_404_NOT_FOUND
+    
+    
+    if specific_tab.user != current_user:
+        response = {"content":"You can't edit this tab."}
+        return response, HTTP_401_UNAUTHORIZED
+    
+    
+    specific_tab.artist = request.json.get('artist') or specific_tab.artist
+    specific_tab.title = request.json.get('title') or specific_tab.title
+    specific_tab.link_to_tab = request.json.get('link_to_tab') or specific_tab.link_to_tab
+    specific_tab.tab = request.json.get('tab') or specific_tab.tab
+    
+    
+    db.session.commit()
+    
+    
+    response = {"content": "Tab updated!"}
+    return response, HTTP_200_OK
+    
