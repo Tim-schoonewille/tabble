@@ -1,7 +1,7 @@
 from flask import Flask
 
 
-
+from datetime import timedelta
 from app.ext import db
 from app.ext import jwt
 from app.models import *
@@ -13,7 +13,14 @@ def create_app():
 
     app.config.update(
         SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite3',
-        SQLALCHEMY_TRACK_MODIFICATIONS = False
+        SQLALCHEMY_TRACK_MODIFICATIONS = False,
+        JWT_SECRET_KEY = 'dev',
+        JWT_COOKIE_CSRF_PROTECT = False,
+        JWT_COOKIE_DOMAIN = 'dev.tabble',
+        JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15),
+        JWT_COOKIE_SECURE = False,
+        JWT_TOKEN_LOCATION = ['cookies', 'headers']
+        
     )
 
     db.init_app(app)
