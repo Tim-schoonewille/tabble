@@ -39,6 +39,21 @@ def admin_get_user(user_uuid):
     return response, HTTP_200_OK
 
 
+@admin_bp.delete('/user/<user_uuid>')
+@admin_required()
+def delete_user(user_uuid):
+    
+    user = User.query.filter_by(user_uuid=user_uuid).one_or_none()
+    
+    if not user:
+        response = {"content":"No such user"}
+        return response, HTTP_404_NOT_FOUND
+    
+    db.session.delete(user)
+    db.session.commit()
+    return {"content": "User deleted"}, HTTP_200_OK   
+
+
 @admin_bp.put('/user/<user_uuid>/deactivate')
 @admin_required()
 def deactivate_user(user_uuid):
@@ -53,6 +68,36 @@ def deactivate_user(user_uuid):
     
     response = {"content": f"User '{user.email}' deactivated"}    
     return response, HTTP_200_OK
+
+
+@admin_bp.put('/user/<user_uuid>/promote')
+@admin_required()
+def change_mod_status(user_uuid):
+    
+    user = User.query.filter_by(user_uuid=user_uuid).one_or_none()
+    
+    if not user:
+        return {"content": "no such user"}, HTTP_404_NOT_FOUND
+    
+    user.is_mod = True
+    db.session.commit()
+    
+    return {"content": "User promoted"}
+
+
+@admin_bp.delete('/user/<user_uuid>/promote')
+@admin_required()
+def demote_mod_status(user_uuid):
+    
+    user = User.query.filter_by(user_uuid=user_uuid).one_or_none()
+    
+    if not user:
+        return {"content": "no such user"}, HTTP_404_NOT_FOUND
+    
+    user.is_mod = False
+    db.session.commit()
+    
+    return {"content": "User deomoted"}
 
 
 
