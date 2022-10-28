@@ -14,7 +14,7 @@ def admin_required():
             if claims["is_admin"]:
                 return fn(*args, **kwargs)
             else:
-                return jsonify(content="Admins only!"), 403
+                return jsonify(content="You are not allowed to view this content"), 403
 
         return decorator
 
