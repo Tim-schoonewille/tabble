@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from app.constants import API_URL_PREFIX, HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 from app.ext import db
-from app.models import Tab, Favourite
+from app.models import Tab, Favourite, Artist
 
 
 
@@ -58,9 +58,18 @@ def add_tab():
         return response, HTTP_409_CONFLICT
     
     
+    artist = Artist.query.filter_by(name=request.json.get('artist').lower()).one_or_none()
+    
+    if not artist:
+        
+        artist = Artist(name=request.json.get('artist').lower())
+        db.session.add(artist)
+        db.session.commit()
+    
+    
     new_tab = Tab(tab_uuid=str(uuid4()),
                   user=current_user,
-                  artist=request.json.get('artist'),
+                  artist=artist,
                   title=request.json.get('title'),
                   tab=request.json.get('tab'),
                   link_to_tab=link_to_tab)

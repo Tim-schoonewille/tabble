@@ -36,7 +36,8 @@ class Tab(db.Model):
     tab_id = db.Column(db.Integer, primary_key=True)
     tab_uuid = db.Column(db.String(500))
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
-    artist = db.Column(db.String(500), nullable=False)
+    # artist = db.Column(db.String(500), nullable=False)
+    artist_id = db.Column(db.Integer, db.ForeignKey('artist.artist_id'))
     title = db.Column(db.String(500), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     last_editted = db.Column(db.DateTime, onupdate=datetime.utcnow)
@@ -46,6 +47,7 @@ class Tab(db.Model):
     user = db.relationship('User', back_populates='tabs_added')
     genres = db.relationship('Genre', secondary='tab_genre')
     favourited = db.relationship('Favourite', back_populates='tab')
+    artist = db.relationship('Artist', back_populates='tabs')
 
     def __repr__(self):
         return f'<TAB: {self.artist} - {self.title}>'
@@ -113,3 +115,25 @@ class TokenBlocklist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     jti = db.Column(db.String(36), nullable=False, index=True)
     created_at = db.Column(db.DateTime, nullable=False)
+
+
+class Artist(db.Model):
+    artist_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(500), nullable=False)
+    
+    tabs = db.relationship('Tab', back_populates='artist')
+    
+    
+    def __repr__(self):
+        return f'<ARTIST: {self.name}>'
+    
+    
+    def serialize(self):
+        
+        artist_tabs = [Tab.serialize(tab) for tab in self.tabs]
+        
+        return {
+            "name": self.name,
+            "tabs": artist_tabs
+        }
+    

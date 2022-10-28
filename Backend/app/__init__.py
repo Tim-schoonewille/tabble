@@ -49,10 +49,12 @@ def create_app():
     from app.views.auth import auth
     from app.views.tab import tab
     from app.views.favourites import favourites
+    from app.views.artist import artist_bp
     
     app.register_blueprint(auth)
     app.register_blueprint(tab)
-    app.register_blueprint(favourites)  
+    app.register_blueprint(favourites)
+    app.register_blueprint(artist_bp)  
     
     # with app.app_context():
     #     db.create_all()
