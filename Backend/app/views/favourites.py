@@ -23,7 +23,7 @@ def get_favourites():
         
         
         if artist:
-            response = {"content": [favourite.serialize() for favourite in current_user.favourite_tabs if favourite.tab.artist==artist]}
+            response = {"content": [favourite.serialize() for favourite in current_user.favourite_tabs if favourite.tab.artist.name==artist]}
             return response, HTTP_200_OK
 
         if title:

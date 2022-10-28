@@ -87,7 +87,7 @@ class Favourite(db.Model):
             "last_editted": self.last_editted,
             "completed": self.completed,
             "title": self.tab.title,
-            "artist": self.tab.artist,
+            "artist": self.tab.artist.name,
         }
 
 class Genre(db.Model):
