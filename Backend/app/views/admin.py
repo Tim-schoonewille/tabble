@@ -7,7 +7,7 @@ from flask_jwt_extended import current_user
 
 from app.constants import API_URL_PREFIX, HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT
 from app.ext import db
-from app.models import User
+from app.models import User, Tab
 from app.decorators import admin_required
 
 
@@ -98,6 +98,21 @@ def demote_mod_status(user_uuid):
     db.session.commit()
     
     return {"content": "User deomoted"}
+
+
+@admin_bp.delete('/tab/<tab_uuid>')
+@admin_required()
+def delete_tab(tab_uuid):
+    
+    tab = Tab.query.filter_by(tab_uuid=tab_uuid).one_or_none()
+    
+    if not tab:
+        return {"content":"No such tab"}, HTTP_404_NOT_FOUND
+    
+    db.session.delete(tab)
+    db.session.commit()
+    
+    return {"content": "Tab deleted"}, HTTP_200_OK
 
 
 
