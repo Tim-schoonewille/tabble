@@ -24,7 +24,7 @@ def create_app():
         JWT_SECRET_KEY = 'dev',
         JWT_COOKIE_CSRF_PROTECT = False,
         JWT_COOKIE_DOMAIN = 'dev.tabble',
-        JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=2),
+        JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15),
         JWT_COOKIE_SECURE = False,
         JWT_TOKEN_LOCATION = ['cookies', 'headers']
         
@@ -58,7 +58,7 @@ def create_app():
         try:
             exp_timestamp = get_jwt()["exp"]
             now = datetime.now()
-            target_timestamp = datetime.timestamp(now + timedelta(minutes=1))
+            target_timestamp = datetime.timestamp(now + timedelta(minutes=10))
             
             if target_timestamp > exp_timestamp:
                 
