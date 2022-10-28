@@ -1,11 +1,14 @@
 from flask import Flask
+from flask import jsonify
 from flask_jwt_extended import get_jwt
 from flask_jwt_extended import current_user
 from flask_jwt_extended import set_access_cookies
 from flask_jwt_extended import create_access_token
+from flask_jwt_extended import verify_jwt_in_request
 
 
 from datetime import timedelta
+from functools import wraps
 from app.ext import db
 from app.ext import jwt
 from app.models import *
@@ -78,15 +81,35 @@ def create_app():
             return response  
     
     
+    def admin_required():
+        def wrapper(fn):
+            @wraps(fn)
+            def decorator(*args, **kwargs):
+                verify_jwt_in_request()
+                claims = get_jwt()
+                if claims["is_admin"]:
+                    return fn(*args, **kwargs)
+                else:
+                    return jsonify(content="Admins only!"), 403
+
+            return decorator
+
+        return wrapper
+    
+    
+    
     from app.views.auth import auth
     from app.views.tab import tab
     from app.views.favourites import favourites
     from app.views.artist import artist_bp
+    from app.views.admin import admin_bp
     
     app.register_blueprint(auth)
     app.register_blueprint(tab)
     app.register_blueprint(favourites)
     app.register_blueprint(artist_bp)  
+    app.register_blueprint(admin_bp)  
+    
     
     # with app.app_context():
     #     db.create_all()
