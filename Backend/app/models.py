@@ -57,7 +57,11 @@ class Tab(db.Model):
         return f'<TAB: {self.artist} - {self.title}>'
     
     def serialize(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        object = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        object.update(
+            Artist = self.artist.name
+        )
+        return object
     
     def favourite(self, user):
         
