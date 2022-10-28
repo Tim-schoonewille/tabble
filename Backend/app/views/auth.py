@@ -44,7 +44,7 @@ def register_account():
     new_user = User(user_uuid=str(uuid4()),
                     email=email.lower(),
                     password=generate_password_hash(password),
-                    is_admin=True,
+                    is_admin=False,
                     is_mod=True,
                     )
     

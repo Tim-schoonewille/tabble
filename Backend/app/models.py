@@ -32,6 +32,10 @@ class User(db.Model):
         return f'<USER: {self.user_uuid}>'
 
 
+    def serialize(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns if c.name != 'password'}
+    
+
 class Tab(db.Model):
     tab_id = db.Column(db.Integer, primary_key=True)
     tab_uuid = db.Column(db.String(500))
