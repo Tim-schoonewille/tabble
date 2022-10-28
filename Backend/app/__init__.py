@@ -1,4 +1,8 @@
 from flask import Flask
+from flask_jwt_extended import get_jwt
+from flask_jwt_extended import current_user
+from flask_jwt_extended import set_access_cookies
+from flask_jwt_extended import create_access_token
 
 
 from datetime import timedelta
@@ -17,7 +21,7 @@ def create_app():
         JWT_SECRET_KEY = 'dev',
         JWT_COOKIE_CSRF_PROTECT = False,
         JWT_COOKIE_DOMAIN = 'dev.tabble',
-        JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15),
+        JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=2),
         JWT_COOKIE_SECURE = False,
         JWT_TOKEN_LOCATION = ['cookies', 'headers']
         
@@ -44,6 +48,34 @@ def create_app():
         token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
 
         return token is not None
+
+
+    @app.after_request
+    def refresh_expiring_jwts(response):
+        try:
+            exp_timestamp = get_jwt()["exp"]
+            now = datetime.now()
+            target_timestamp = datetime.timestamp(now + timedelta(minutes=1))
+            
+            if target_timestamp > exp_timestamp:
+                
+                # # add to database
+                jti = get_jwt()["jti"]
+                now = datetime.now()
+                db.session.add(TokenBlocklist(jti=jti, created_at=now))
+                db.session.commit()
+                
+                
+                additional_claims = {
+                    "is_admin": current_user.is_admin,
+                    "is_mod": current_user.is_mod}
+                
+                access_token = create_access_token(identity=current_user, additional_claims=additional_claims, fresh=False)
+                set_access_cookies(response, access_token)
+            return response
+        except (RuntimeError, KeyError):
+            # Case where there is not a valid JWT. Just return the original response
+            return response  
     
     
     from app.views.auth import auth
