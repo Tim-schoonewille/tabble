@@ -82,7 +82,7 @@ def change_mod_status(user_uuid):
     user.is_mod = True
     db.session.commit()
     
-    return {"content": "User promoted"}
+    return {"content": "User promoted"}, HTTP_200_OK
 
 
 @admin_bp.delete('/user/<user_uuid>/promote')
@@ -97,7 +97,7 @@ def demote_mod_status(user_uuid):
     user.is_mod = False
     db.session.commit()
     
-    return {"content": "User deomoted"}
+    return {"content": "User deomoted"}, HTTP_200_OK
 
 
 @admin_bp.delete('/tab/<tab_uuid>')

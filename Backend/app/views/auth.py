@@ -64,7 +64,7 @@ def register_account():
     db.session.commit()
                                                
 
-    response = {"conent":"Registration success"}
+    response = {"content":"Registration success"}
     return response, HTTP_201_CREATED
 
 
